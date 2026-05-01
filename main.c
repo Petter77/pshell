@@ -54,27 +54,18 @@ char **get_args(char *input) {
   return args;
 }
 
-void shell_loop(void) {
-  char *input;
-  char **args;
-  int should_run = 1;
-  int proc_status = 0;
+void print_indicator(int status) {
   char dir[1024];
+  if (status == 0) {
+    printf("\n%s >", getcwd(dir, 1024));
+  }
+  else {
+    printf("\n%s "RED">" RESET, getcwd(dir, 1024));
+  }
+  fflush(stdout);
+}
 
-  do {
-    if (proc_status == 0) {
-      printf("\n%s >", getcwd(dir, 1024));
-    }
-
-    else {
-      printf("\n%s "RED">" RESET, getcwd(dir, 1024));
-    }
-
-    fflush(stdout);
-    input = get_input();
-    args = get_args(input);
-
-    if (args[0] == NULL) continue;
+void execute(char** args, int* proc_status) {
 
     if (strcmp(args[0], "exit") == 0) {
       exit(EXIT_SUCCESS);
@@ -85,9 +76,23 @@ void shell_loop(void) {
     if (pid == 0) {
       execvp(args[0], args);
     } else {
-      waitpid(pid, &proc_status, 0);
+      waitpid(pid, proc_status, 0);
     }
+}
 
+void shell_loop(void) {
+  char *input;
+  char **args;
+  int should_run = 1;
+  int proc_status = 0;
+
+  do {
+    print_indicator(proc_status);
+    input = get_input();
+    args = get_args(input);
+
+    if (args[0] == NULL) continue;
+    execute(args, &proc_status);
     free(input);
   } while (should_run);
 }
