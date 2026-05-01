@@ -65,11 +65,27 @@ void print_indicator(int status) {
   fflush(stdout);
 }
 
-void execute(char** args, int* proc_status) {
-
+void shell_scripts(char** args) {
     if (strcmp(args[0], "exit") == 0) {
       exit(EXIT_SUCCESS);
     }
+
+    if (strcmp(args[0], "cd") == 0) {
+      if (args[1] != NULL) {
+        char dir[1024];
+        char* curr_path = getcwd(dir, 1024);
+        strcat(curr_path, "/");
+        strcat(curr_path, args[1]);
+        printf("%s\n", curr_path);
+        if (chdir(curr_path)) {
+          printf("blad\n");
+        }
+      }
+    }
+}
+
+void execute(char** args, int* proc_status) {
+  shell_scripts(args);
 
     pid_t pid = fork();
 
