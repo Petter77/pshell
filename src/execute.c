@@ -1,0 +1,48 @@
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+
+
+int shell_scripts(char** args, int* proc_status) {
+  // exit
+  if (strcmp(args[0], "exit") == 0) {
+    exit(EXIT_SUCCESS);
+  }
+  // cd
+  if (strcmp(args[0], "cd") == 0) {
+    if (args[1] == NULL) {
+      chdir(getenv("HOME"));
+    } 
+    else if (args[2] != NULL) {
+      printf("cd: too many arguments\n");
+      *proc_status = 1;
+      return 1;
+    } 
+    else {
+      if (chdir(args[1]) != 0) {
+        perror("cd");
+        *proc_status = 1;
+        return 1;
+      }
+    }
+    *proc_status = 0;
+    return 1;
+  }
+  return 0;
+}
+
+void execute(char** args, int* proc_status) {
+  int should_return = shell_scripts(args, proc_status);
+  if (should_return) {
+    return;
+  }
+
+  pid_t pid = fork();
+  if (pid == 0) {
+    execvp(args[0], args);
+  } else {
+    waitpid(pid, proc_status, 0);
+  }
+}
