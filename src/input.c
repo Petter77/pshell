@@ -1,11 +1,12 @@
-#include "../include/input.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../include/input.h"
+
 #define BUFFER_SIZE 1024
 
-char* get_input () {
+char* get_input() {
   char* input = malloc(sizeof(char) * BUFFER_SIZE);
   fgets(input, BUFFER_SIZE, stdin);
   input[strcspn(input, "\n")] = '\0';

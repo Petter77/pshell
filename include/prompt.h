@@ -1,5 +1,6 @@
-#ifndef PROMPT_H
-#define PROMPT_H
+#ifndef MYSHELL_INCLUDE_PROMPT_H_
+#define MYSHELL_INCLUDE_PROMPT_H_
+
 void print_indicator(int status);
 
-#endif
+#endif  // MYSHELL_INCLUDE_PROMPT_H_

@@ -14,13 +14,11 @@ int shell_scripts(char** args, int* proc_status) {
   if (strcmp(args[0], "cd") == 0) {
     if (args[1] == NULL) {
       chdir(getenv("HOME"));
-    } 
-    else if (args[2] != NULL) {
+    } else if (args[2] != NULL) {
       printf("cd: too many arguments\n");
       *proc_status = 1;
       return 1;
-    } 
-    else {
+    } else {
       if (chdir(args[1]) != 0) {
         perror("cd");
         *proc_status = 1;

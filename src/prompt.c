@@ -16,8 +16,7 @@ void print_indicator(int status) {
   if (status == 0) {
     printf("%s >", getcwd(dir, 1024));
     fflush(stdout);
-  }
-  else {
+  } else {
     printf("%s "RED">" RESET, getcwd(dir, 1024));
     fflush(stdout);
   }

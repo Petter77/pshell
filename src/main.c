@@ -24,7 +24,7 @@ void shell_loop(void) {
   } while (should_run);
 }
 
-int main () {
+int main() {
   shell_loop();
 
   return EXIT_SUCCESS;
