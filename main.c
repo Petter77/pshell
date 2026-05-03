@@ -57,43 +57,57 @@ char **get_args(char *input) {
 void print_indicator(int status) {
   char dir[1024];
   if (status == 0) {
-    printf("\n%s >", getcwd(dir, 1024));
+    printf("%s >", getcwd(dir, 1024));
+    fflush(stdout);
   }
   else {
-    printf("\n%s "RED">" RESET, getcwd(dir, 1024));
+    printf("%s "RED">" RESET, getcwd(dir, 1024));
+    fflush(stdout);
   }
-  fflush(stdout);
 }
 
-void shell_scripts(char** args) {
-    if (strcmp(args[0], "exit") == 0) {
-      exit(EXIT_SUCCESS);
-    }
-
-    if (strcmp(args[0], "cd") == 0) {
-      if (args[1] != NULL) {
-        char dir[1024];
-        char* curr_path = getcwd(dir, 1024);
-        strcat(curr_path, "/");
-        strcat(curr_path, args[1]);
-        printf("%s\n", curr_path);
-        if (chdir(curr_path)) {
-          printf("blad\n");
-        }
+int shell_scripts(char** args, int* proc_status) {
+  // exit
+  if (strcmp(args[0], "exit") == 0) {
+    exit(EXIT_SUCCESS);
+  }
+  // cd
+  if (strcmp(args[0], "cd") == 0) {
+    if (args[1] == NULL) {
+      chdir(getenv("HOME"));
+    } 
+    else if (args[2] != NULL) {
+      printf("cd: too many arguments\n");
+      *proc_status = 1;
+      return 1;
+    } 
+    else {
+      if (chdir(args[1]) != 0) {
+        perror("cd");
+        *proc_status = 1;
+        return 1;
       }
     }
+    *proc_status = 0;
+    return 1;
+  }
+  return 0;
 }
 
 void execute(char** args, int* proc_status) {
-  shell_scripts(args);
+  int should_return = shell_scripts(args, proc_status);
 
-    pid_t pid = fork();
+  if (should_return) {
+    return;
+  }
 
-    if (pid == 0) {
-      execvp(args[0], args);
-    } else {
-      waitpid(pid, proc_status, 0);
-    }
+  pid_t pid = fork();
+
+  if (pid == 0) {
+    execvp(args[0], args);
+  } else {
+    waitpid(pid, proc_status, 0);
+  }
 }
 
 void shell_loop(void) {
