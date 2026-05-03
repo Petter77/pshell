@@ -1,6 +1,6 @@
 # myshell
 
-A Unix shell written from scratch in C. Built without tutorials — by reading man pages, experimenting, and understanding how processes actually work under the hood.
+A Unix shell written from scratch in C. Built without tutorials - by reading man pages, experimenting, and understanding how processes actually work under the hood.
 
 ## Features
 
@@ -27,10 +27,19 @@ Binary is output to `build/main`.
 ```
 
 ```
-/home//projects > ls -la
-/home/projects > cd myshell
-/home/projects/myshell > exit
+/home/projects/myshell > ls -la
+/home/projects/myshell > cd ..
+/home/projects > exit
 ```
+
+### Built-in commands
+
+| Command | Description |
+|--------|-------------|
+| `cd [dir]` | Change directory. No argument defaults to `$HOME`. Uses `chdir` directly in the parent process - not a child. |
+| `exit` | Exit the shell. |
+
+These are implemented from scratch without calling any external binary.
 
 ## Project Structure
 
@@ -51,13 +60,13 @@ myshell/
 
 ## Implementation Notes
 
-**Argument parsing** — custom tokenizer using two-pointer technique (`start`/`end`) with dynamic reallocation. No `strtok`.
+**Argument parsing** - custom tokenizer using two-pointer technique (`start`/`end`) with dynamic reallocation. No `strtok`.
 
-**Process execution** — `fork` + `execvp` with `waitpid`. Parent always waits for child to finish before displaying next prompt.
+**Process execution** - `fork` + `execvp` with `waitpid`. Parent always waits for child to finish before displaying next prompt.
 
-**Built-in commands** — handled before `fork` since they need to modify shell state directly (e.g. `chdir` must run in the parent process, not a child).
+**Built-in commands** - handled before `fork` since they need to modify shell state directly (e.g. `chdir` must run in the parent process, not a child).
 
-**Prompt** — uses `getcwd` and ANSI escape codes. Exit status of the last command determines prompt color.
+**Prompt** - uses `getcwd` and ANSI escape codes. Exit status of the last command determines prompt color.
 
 ## Planned
 
